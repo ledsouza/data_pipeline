@@ -2,6 +2,10 @@ import os
 from os.path import join
 import pandas as pd
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+# ler as variáveis ambientes do diretório atual
+load_dotenv()
 
 # intervalo de datas
 data_inicio = datetime.today()
@@ -12,7 +16,7 @@ data_inicio = data_inicio.strftime('%Y-%m-%d')
 data_fim = data_fim.strftime('%Y-%m-%d')
 
 city = 'Boston'
-key = '8LQZD3B5XDXDVQYA6W7FF2YDD'
+key = os.getenv("WEATHER_API_KEY")
 
 URL = join('https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/',
             f'{city}/{data_inicio}/{data_fim}?unitGroup=metric&include=days&key={key}&contentType=csv')
