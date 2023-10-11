@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow.macros import ds_add
+from airflow.models import Variable
 import pendulum
 import os
 from os.path import join
@@ -19,6 +20,7 @@ with DAG(
         bash_command = 'mkdir -p "/Users/leandrosouza/Library/CloudStorage/GoogleDrive-leandro.souza.159@gmail.com/My Drive/Projetos Python/data_pipeline/semana={{data_interval_end.strftime("%Y-%m-%d")}}"'
     )
 
+    @task(task_id = 'extrai_dados')
     def extrai_dados(data_interval_end):
         load_dotenv()
         city = 'Boston'
@@ -35,10 +37,6 @@ with DAG(
         dados[['datetime','tempmin', 'temp', 'tempmax']].to_csv(file_path + 'temperaturas.csv')
         dados[['datetime', 'description', 'icon']].to_csv(file_path + 'condicoes.csv')
 
-    tarefa_2 = PythonOperator(
-        task_id = 'extrai_dados',
-        python_callable = extrai_dados,
-        op_kwargs = {'data_interval_end': '{{data_interval_end.strftime("%Y-%m-%d")}}'}
-    )
-
-    tarefa_1 >> tarefa_2
+    data_interval_end = Variable.get('data_interval_end').strftime("%Y-%m-%d")
+    extrai_dados_task = extrai_dados(data_interval_end)
+    tarefa_1 >> extrai_dados_task
