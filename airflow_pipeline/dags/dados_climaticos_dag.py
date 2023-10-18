@@ -1,6 +1,6 @@
 from airflow import DAG 
 from airflow.operators.bash import BashOperator
-from airflow.operators.python import PythonOperator
+from airflow.decorators import task
 from airflow.macros import ds_add
 from airflow.models import Variable
 import pendulum
@@ -37,6 +37,6 @@ with DAG(
         dados[['datetime','tempmin', 'temp', 'tempmax']].to_csv(file_path + 'temperaturas.csv')
         dados[['datetime', 'description', 'icon']].to_csv(file_path + 'condicoes.csv')
 
-    data_interval_end = Variable.get('data_interval_end').strftime("%Y-%m-%d")
+    data_interval_end = '{{data_interval_end.strftime("%Y-%m-%d")}}'
     extrai_dados_task = extrai_dados(data_interval_end)
     tarefa_1 >> extrai_dados_task
