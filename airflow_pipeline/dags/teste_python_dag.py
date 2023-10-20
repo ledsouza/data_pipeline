@@ -12,10 +12,12 @@ with DAG(
     tarefa_1 = EmptyOperator(task_id='tarefa_1')
     
     @task(task_id = 'task_cumprimentos')
-    def cumprimentos():
-        print("Boas-vindas ao Airflow!")
+    def cumprimentos(x):
+        data_interval_end = '{{data_interval_end.strftime("%Y-%m-%d")}}'
+        print(f'Boas-vindas ao Airflow!')
+        print(f'{data_interval_end}')
 
-    tarefa_2 = cumprimentos()
+    tarefa_2 = cumprimentos(5)
     
     tarefa_1 >> tarefa_2
 
